@@ -21,7 +21,7 @@ import java.util.HashMap;
  * its better practice to use the
  * Enhanced Client. See the EnhancedPutItem example.
  */
-public class PutItem {
+public class Handler {
     public static void main(String[] args) {
         final String usage = """
 
@@ -102,5 +102,9 @@ public class PutItem {
             System.err.println(e.getMessage());
             System.exit(1);
         }
+    }
+
+    public static void sendRequest() {
+        
     }
 }
