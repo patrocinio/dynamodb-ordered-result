@@ -9,6 +9,9 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Before running this Java V2 code example, set up your development
  * environment, including your credentials.
@@ -22,67 +25,19 @@ import java.util.HashMap;
  * Enhanced Client. See the EnhancedPutItem example.
  */
 public class Handler {
-    public static void main(String[] args) {
-        final String usage = """
-
-                Usage:
-                    <tableName> <key> <keyVal> <albumtitle> <albumtitleval> <awards> <awardsval> <Songtitle> <songtitleval>
-
-                Where:
-                    tableName - The Amazon DynamoDB table in which an item is placed (for example, Music3).
-                    key - The key used in the Amazon DynamoDB table (for example, Artist).
-                    keyval - The key value that represents the item to get (for example, Famous Band).
-                    albumTitle - The Album title (for example, AlbumTitle).
-                    AlbumTitleValue - The name of the album (for example, Songs About Life ).
-                    Awards - The awards column (for example, Awards).
-                    AwardVal - The value of the awards (for example, 10).
-                    SongTitle - The song title (for example, SongTitle).
-                    SongTitleVal - The value of the song title (for example, Happy Day).
-                **Warning** This program will  place an item that you specify into a table!
-                """;
-
-        if (args.length != 9) {
-            System.out.println(usage);
-            System.exit(1);
-        }
-
-        String tableName = args[0];
-        String key = args[1];
-        String keyVal = args[2];
-        String albumTitle = args[3];
-        String albumTitleValue = args[4];
-        String awards = args[5];
-        String awardVal = args[6];
-        String songTitle = args[7];
-        String songTitleVal = args[8];
-
-        Region region = Region.US_EAST_1;
-        DynamoDbClient ddb = DynamoDbClient.builder()
-                .region(region)
-                .build();
-
-        putItemInTable(ddb, tableName, key, keyVal, albumTitle, albumTitleValue, awards, awardVal, songTitle,
-                songTitleVal);
-        System.out.println("Done!");
-        ddb.close();
-    }
+    private static final Logger logger = LoggerFactory.getLogger(App.class);
 
     public static void putItemInTable(DynamoDbClient ddb,
             String tableName,
             String key,
             String keyVal,
-            String albumTitle,
-            String albumTitleValue,
-            String awards,
-            String awardVal,
-            String songTitle,
-            String songTitleVal) {
+            String seqNo,
+            String seqNoVal) 
+    {
 
         HashMap<String, AttributeValue> itemValues = new HashMap<>();
-        itemValues.put(key, AttributeValue.builder().s(keyVal).build());
-        itemValues.put(songTitle, AttributeValue.builder().s(songTitleVal).build());
-        itemValues.put(albumTitle, AttributeValue.builder().s(albumTitleValue).build());
-        itemValues.put(awards, AttributeValue.builder().s(awardVal).build());
+        itemValues.put(key, AttributeValue.builder().n(keyVal).build());
+        itemValues.put(seqNo, AttributeValue.builder().n(seqNoVal).build());
 
         PutItemRequest request = PutItemRequest.builder()
                 .tableName(tableName)
@@ -105,6 +60,17 @@ public class Handler {
     }
 
     public static void sendRequest() {
-        
+        logger.info("Handler starts");
+
+        Region region = Region.US_EAST_1;
+        DynamoDbClient ddb = DynamoDbClient.builder()
+                .region(region)
+                .build();
+
+        putItemInTable(ddb, "ordered_result", "key", "0", "seq_no", "0");
+
+        ddb.close();
+
+        logger.info("Handler ends");
     }
 }
