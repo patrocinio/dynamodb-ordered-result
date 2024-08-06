@@ -1,3 +1,4 @@
 org/patro/App.class
+org/patro/Configuration.class
 org/patro/Handler.class
 org/patro/DependencyFactory.class

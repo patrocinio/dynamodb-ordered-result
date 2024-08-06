@@ -1,3 +1,6 @@
 /Users/epatro/github/dynamodb-ordered-result/src/main/java/org/patro/DependencyFactory.java
 /Users/epatro/github/dynamodb-ordered-result/src/main/java/org/patro/App.java
+/Users/epatro/github/dynamodb-ordered-result/src/main/java/org/patro/SequenceNumber.java
+/Users/epatro/github/dynamodb-ordered-result/src/main/java/org/patro/Configuration.java
+/Users/epatro/github/dynamodb-ordered-result/src/main/java/org/patro/PutItemThread.java
 /Users/epatro/github/dynamodb-ordered-result/src/main/java/org/patro/Handler.java

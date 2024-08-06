@@ -8,9 +8,9 @@ public class App {
     public static void main(String... args) {
         logger.info("Application starts");
 
-        Handler handler = new Handler();
-        handler.sendRequest();
-
+        PutItemThread putItem = new PutItemThread();
+        putItem.start();
+        
         logger.info("Application ends");
     }
 }

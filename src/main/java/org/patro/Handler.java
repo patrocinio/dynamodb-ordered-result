@@ -59,15 +59,15 @@ public class Handler {
         }
     }
 
-    public static void sendRequest() {
-        logger.info("Handler starts");
+    public static void sendRequest(int seqNoVal) {
+        logger.info("Handler starts seqNo: " + seqNoVal);
 
         Region region = Region.US_EAST_1;
         DynamoDbClient ddb = DynamoDbClient.builder()
                 .region(region)
                 .build();
 
-        putItemInTable(ddb, "ordered_result", "key", "0", "seq_no", "0");
+        putItemInTable(ddb, "ordered_result", "key", "0", "seq_no", String.valueOf(seqNoVal));
 
         ddb.close();
 
