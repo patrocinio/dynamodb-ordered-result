@@ -1,4 +1,7 @@
+org/patro/SequenceNumber.class
 org/patro/App.class
 org/patro/Configuration.class
 org/patro/Handler.class
+org/patro/PutItemThread.class
+org/patro/GetItemThread.class
 org/patro/DependencyFactory.class

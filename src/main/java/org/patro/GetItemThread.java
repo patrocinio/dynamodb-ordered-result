@@ -1,12 +1,12 @@
 package org.patro;
 
-public class PutItemThread extends Thread {
+public class GetItemThread extends Thread {
     public void run() {
         for (int i = 0; i < Configuration.ITERATIONS; i++)
         {
-            int seqNo = SequenceNumber.incSeqNo();
 
-            Handler.sendWriteRequest(seqNo);
+            int readNo = Handler.sendReadRequest();
+            int seqNo = SequenceNumber.getSeqNo();
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

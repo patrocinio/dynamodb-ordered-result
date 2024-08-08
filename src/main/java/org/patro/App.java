@@ -8,8 +8,11 @@ public class App {
     public static void main(String... args) {
         logger.info("Application starts");
 
-        PutItemThread putItem = new PutItemThread();
-        putItem.start();
+//        PutItemThread putItem = new PutItemThread();
+//        putItem.start();
+
+        GetItemThread getItem = new GetItemThread();
+        getItem.start();
         
         logger.info("Application ends");
     }

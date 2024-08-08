@@ -6,8 +6,11 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
+import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 import java.util.HashMap;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +62,39 @@ public class Handler {
         }
     }
 
-    public static void sendRequest(int seqNoVal) {
-        logger.info("Handler starts seqNo: " + seqNoVal);
+    public static GetItemResponse getItemFromTable(DynamoDbClient ddb,
+            String tableName,
+            String key,
+            String keyVal) 
+    {
+
+        HashMap<String, AttributeValue> itemValues = new HashMap<>();
+        itemValues.put(key, AttributeValue.builder().n(keyVal).build());
+
+        GetItemRequest request = GetItemRequest.builder()
+                .tableName(tableName)
+                .key(itemValues)
+                .build();
+
+        try {
+            GetItemResponse response = ddb.getItem(request);
+            return response;
+
+        } catch (ResourceNotFoundException e) {
+            System.err.format("Error: The Amazon DynamoDB table \"%s\" can't be found.\n", tableName);
+            System.err.println("Be sure that it exists and that you've typed its name correctly!");
+            System.exit(1);
+        } catch (DynamoDbException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+
+        return null;
+
+    }
+
+    public static void sendWriteRequest(int seqNoVal) {
+        logger.info("WriteRequest starts seqNo: " + seqNoVal);
 
         Region region = Region.US_EAST_1;
         DynamoDbClient ddb = DynamoDbClient.builder()
@@ -71,6 +105,26 @@ public class Handler {
 
         ddb.close();
 
-        logger.info("Handler ends");
+        logger.info("WriteRequest ends");
     }
+
+    public static int sendReadRequest() {
+        logger.info("ReadRequest starts");
+
+        Region region = Region.US_EAST_1;
+        DynamoDbClient ddb = DynamoDbClient.builder()
+                .region(region)
+                .build();
+
+        GetItemResponse response = getItemFromTable(ddb, "ordered_result", "key", "0");
+        Optional<Integer> i = response.getValueForField("seq_no", Integer.class);
+        int result = i.get().intValue();
+        ddb.close();
+
+        logger.info("ReadRequest ends result: ", result);
+
+        return result;
+
+    }
+
 }
