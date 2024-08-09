@@ -3,13 +3,17 @@ package org.patro;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.ComparisonOperator;
+import software.amazon.awssdk.services.dynamodb.model.Condition;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
-import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
+import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
+import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -62,25 +66,27 @@ public class Handler {
         }
     }
 
-    public static GetItemResponse getItemFromTable(DynamoDbClient ddb,
+    public static QueryResponse getItemFromTable(DynamoDbClient ddb,
             String tableName,
             String key,
             String keyVal) 
     {
 
-        HashMap<String, AttributeValue> itemValues = new HashMap<>();
-        itemValues.put(key, AttributeValue.builder().n(keyVal).build());
-        itemValues.put("seq_no", AttributeValue.builder().n("0").build());
+        HashMap<String, Condition> conditions = new HashMap<String, Condition>();
+        ComparisonOperator eq = ComparisonOperator.EQ;
+        AttributeValue value = AttributeValue.builder().n(keyVal).build();
+        Condition c = Condition.builder().comparisonOperator(eq).attributeValueList(value).build();
+        conditions.put(key, c);
 
-        GetItemRequest request = GetItemRequest.builder()
+        QueryRequest request = QueryRequest.builder()
                 .tableName(tableName)
-                .key(itemValues)
+                .keyConditions(conditions)
                 .build();
 
         logger.info ("request: " + request.toString());
 
         try {
-            GetItemResponse response = ddb.getItem(request);
+            QueryResponse response = ddb.query(request);
             return response;
 
         } catch (ResourceNotFoundException e) {
@@ -119,12 +125,25 @@ public class Handler {
                 .region(region)
                 .build();
 
-        GetItemResponse response = getItemFromTable(ddb, "ordered_result", "key", "0");
-        Optional<Integer> i = response.getValueForField("seq_no", Integer.class);
-        int result = i.get().intValue();
+        QueryResponse response = getItemFromTable(ddb, "ordered_result", "key", "0");
+//        logger.info("ReadRequest response: " + response);
+
+        List<Map<String, AttributeValue>> items = response.items();
+//        logger.info("ReadRequest items: " + items);
+
+        Map<String, AttributeValue> map = items.get(0);
+        logger.info("ReadRequest map: " + map);
+
+        AttributeValue value = map.get("seq_no");
+        logger.info ("ReadRequest value: " + value);
+
+        String i = value.n();
+        logger.info("ReadRequest i: " + i);
+
+        int result = Integer.parseInt(i);
         ddb.close();
 
-        logger.info("ReadRequest ends result: ", result);
+        logger.info("ReadRequest ends result: " + result);
 
         return result;
 
