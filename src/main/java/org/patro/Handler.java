@@ -135,6 +135,10 @@ public class Handler {
         List<Map<String, AttributeValue>> items = response.items();
  //       logger.info("ReadRequest items: " + items);
 
+        if (items.isEmpty()) {
+            return 0;
+        }
+        
         Map<String, AttributeValue> map = items.get(0);
         logger.info("ReadRequest map: " + map);
 
