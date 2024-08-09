@@ -46,8 +46,8 @@ public class Handler {
     {
 
         HashMap<String, AttributeValue> itemValues = new HashMap<>();
-        itemValues.put(key, AttributeValue.builder().s(keyVal).build());
-        itemValues.put(seqNo, AttributeValue.builder().s(seqNoVal).build());
+        itemValues.put(key, AttributeValue.builder().n(keyVal).build());
+        itemValues.put(seqNo, AttributeValue.builder().n(seqNoVal).build());
 
         PutItemRequest request = PutItemRequest.builder()
                 .tableName(tableName)
@@ -133,12 +133,12 @@ public class Handler {
 //        logger.info("ReadRequest response: " + response);
 
         List<Map<String, AttributeValue>> items = response.items();
- //       logger.info("ReadRequest items: " + items);
+        logger.info("ReadRequest items: " + items);
 
         if (items.isEmpty()) {
             return 0;
         }
-        
+
         Map<String, AttributeValue> map = items.get(0);
         logger.info("ReadRequest map: " + map);
 

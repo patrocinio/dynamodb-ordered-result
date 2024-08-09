@@ -9,11 +9,12 @@ public class App {
         logger.info("Application starts");
 
         Handler.trimTable();
+        SequenceNumber seqNo = new SequenceNumber();
 
-//        PutItemThread putItem = new PutItemThread();
-//        putItem.start();
+        PutItemThread putItem = new PutItemThread(seqNo);
+        putItem.start();
 
-        GetItemThread getItem = new GetItemThread();
+        GetItemThread getItem = new GetItemThread(seqNo);
         getItem.start();
         
         logger.info("Application ends");
