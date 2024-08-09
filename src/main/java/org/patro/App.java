@@ -8,6 +8,8 @@ public class App {
     public static void main(String... args) {
         logger.info("Application starts");
 
+        Handler.trimTable();
+
 //        PutItemThread putItem = new PutItemThread();
 //        putItem.start();
 

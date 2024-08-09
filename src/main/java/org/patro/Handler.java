@@ -5,12 +5,15 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ComparisonOperator;
 import software.amazon.awssdk.services.dynamodb.model.Condition;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
+import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +84,7 @@ public class Handler {
         QueryRequest request = QueryRequest.builder()
                 .tableName(tableName)
                 .keyConditions(conditions)
+                .scanIndexForward(false)
                 .build();
 
         logger.info ("request: " + request.toString());
@@ -129,7 +133,7 @@ public class Handler {
 //        logger.info("ReadRequest response: " + response);
 
         List<Map<String, AttributeValue>> items = response.items();
-//        logger.info("ReadRequest items: " + items);
+ //       logger.info("ReadRequest items: " + items);
 
         Map<String, AttributeValue> map = items.get(0);
         logger.info("ReadRequest map: " + map);
@@ -146,6 +150,36 @@ public class Handler {
         logger.info("ReadRequest ends result: " + result);
 
         return result;
+    }
+
+    public static void trimTable() {
+        Region region = Region.US_EAST_1;
+        DynamoDbClient ddb = DynamoDbClient.builder()
+                .region(region)
+                .build();
+
+        ScanRequest request = ScanRequest.builder().tableName("ordered_result").build();
+        ScanResponse response;
+
+        
+        do {
+            response = ddb.scan(request);
+            logger.info ("trimTable response: " + response);
+            
+            for (Map<String, AttributeValue> item : response.items()) {
+                Map<String, AttributeValue> key = new HashMap<String, AttributeValue>();
+                key.put("key", item.get("key"));
+                key.put("seq_no", item.get("seq_no"));
+                logger.info ("==> trimTable deleting item: " + item);
+                DeleteItemRequest deleteRequest = DeleteItemRequest.builder().tableName("ordered_result").key(key).build();
+                ddb.deleteItem(deleteRequest);
+
+            }
+
+        } while (response.count() > 0);
+         
+        ddb.close();
+
 
     }
 
