@@ -39,8 +39,8 @@ public class Handler {
     {
 
         HashMap<String, AttributeValue> itemValues = new HashMap<>();
-        itemValues.put(key, AttributeValue.builder().n(keyVal).build());
-        itemValues.put(seqNo, AttributeValue.builder().n(seqNoVal).build());
+        itemValues.put(key, AttributeValue.builder().s(keyVal).build());
+        itemValues.put(seqNo, AttributeValue.builder().s(seqNoVal).build());
 
         PutItemRequest request = PutItemRequest.builder()
                 .tableName(tableName)
@@ -70,11 +70,14 @@ public class Handler {
 
         HashMap<String, AttributeValue> itemValues = new HashMap<>();
         itemValues.put(key, AttributeValue.builder().n(keyVal).build());
+        itemValues.put("seq_no", AttributeValue.builder().n("0").build());
 
         GetItemRequest request = GetItemRequest.builder()
                 .tableName(tableName)
                 .key(itemValues)
                 .build();
+
+        logger.info ("request: " + request.toString());
 
         try {
             GetItemResponse response = ddb.getItem(request);
