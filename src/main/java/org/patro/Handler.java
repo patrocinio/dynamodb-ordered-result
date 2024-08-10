@@ -141,7 +141,7 @@ public class Handler {
         }
 
         Map<String, AttributeValue> map = items.get(0);
-        logger.info("ReadRequest map: " + map);
+//        logger.info("ReadRequest map: " + map);
 
         AttributeValue value = map.get(Configuration.SEQ_NO);
         logger.info ("ReadRequest value: " + value);
