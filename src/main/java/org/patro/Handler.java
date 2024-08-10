@@ -84,6 +84,7 @@ public class Handler {
                 .tableName(tableName)
                 .keyConditions(conditions)
                 .scanIndexForward(false)
+                .consistentRead(true)
                 .limit(1)
                 .build();
 
