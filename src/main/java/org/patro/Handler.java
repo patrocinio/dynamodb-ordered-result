@@ -88,7 +88,7 @@ public class Handler {
                 .limit(1)
                 .build();
 
-        logger.info ("request: " + request.toString());
+//        logger.info ("request: " + request.toString());
 
         try {
             QueryResponse response = ddb.query(request);

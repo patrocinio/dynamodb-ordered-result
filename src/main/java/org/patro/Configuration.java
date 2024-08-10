@@ -3,7 +3,7 @@ package org.patro;
 public interface Configuration {
     public int ITERATIONS = 1000;
     public int DELAY= 10; // in ms
-    public int NO_OF_THREADS = 2;
+    public int NO_OF_THREADS = 4;
 
     public String TABLE_NAME = "ordered_result";
     public String KEY = "key";
