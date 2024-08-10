@@ -55,7 +55,7 @@ public class Handler {
 
         try {
             PutItemResponse response = ddb.putItem(request);
-            System.out.println(tableName + " was successfully updated. The request id is "
+            log.info(tableName + " was successfully updated. The request id is "
                     + response.responseMetadata().requestId());
 
         } catch (ResourceNotFoundException e) {
