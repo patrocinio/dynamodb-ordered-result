@@ -85,6 +85,7 @@ public class Handler {
                 .tableName(tableName)
                 .keyConditions(conditions)
                 .scanIndexForward(false)
+                .limit(1)
                 .build();
 
         logger.info ("request: " + request.toString());
@@ -114,7 +115,7 @@ public class Handler {
                 .region(region)
                 .build();
 
-        putItemInTable(ddb, "ordered_result", "key", "0", "seq_no", String.valueOf(seqNoVal));
+        putItemInTable(ddb, Configuration.TABLE_NAME, Configuration.KEY, Configuration.KEY_VAL, Configuration.SEQ_NO, String.valueOf(seqNoVal));
 
         ddb.close();
 
@@ -129,11 +130,11 @@ public class Handler {
                 .region(region)
                 .build();
 
-        QueryResponse response = getItemFromTable(ddb, "ordered_result", "key", "0");
+        QueryResponse response = getItemFromTable(ddb, Configuration.TABLE_NAME, Configuration.KEY, Configuration.KEY_VAL);
 //        logger.info("ReadRequest response: " + response);
 
         List<Map<String, AttributeValue>> items = response.items();
-        logger.info("ReadRequest items: " + items);
+//        logger.info("ReadRequest items: " + items);
 
         if (items.isEmpty()) {
             return 0;
@@ -142,7 +143,7 @@ public class Handler {
         Map<String, AttributeValue> map = items.get(0);
         logger.info("ReadRequest map: " + map);
 
-        AttributeValue value = map.get("seq_no");
+        AttributeValue value = map.get(Configuration.SEQ_NO);
         logger.info ("ReadRequest value: " + value);
 
         String i = value.n();
@@ -162,20 +163,20 @@ public class Handler {
                 .region(region)
                 .build();
 
-        ScanRequest request = ScanRequest.builder().tableName("ordered_result").build();
+        ScanRequest request = ScanRequest.builder().tableName(Configuration.TABLE_NAME).build();
         ScanResponse response;
 
         
         do {
             response = ddb.scan(request);
-            logger.info ("trimTable response: " + response);
+//            logger.info ("trimTable response: " + response);
             
             for (Map<String, AttributeValue> item : response.items()) {
                 Map<String, AttributeValue> key = new HashMap<String, AttributeValue>();
-                key.put("key", item.get("key"));
-                key.put("seq_no", item.get("seq_no"));
-                logger.info ("==> trimTable deleting item: " + item);
-                DeleteItemRequest deleteRequest = DeleteItemRequest.builder().tableName("ordered_result").key(key).build();
+                key.put(Configuration.KEY, item.get(Configuration.KEY));
+                key.put(Configuration.SEQ_NO, item.get(Configuration.SEQ_NO));
+                logger.info ("trimTable deleting item: " + item);
+                DeleteItemRequest deleteRequest = DeleteItemRequest.builder().tableName(Configuration.TABLE_NAME).key(key).build();
                 ddb.deleteItem(deleteRequest);
 
             }

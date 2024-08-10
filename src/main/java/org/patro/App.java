@@ -16,7 +16,15 @@ public class App {
 
         GetItemThread getItem = new GetItemThread(seqNo);
         getItem.start();
-        
+
+        try {
+            putItem.join();
+            getItem.join();
+        } catch (InterruptedException e) {
+        }
+
+        Handler.trimTable();
+
         logger.info("Application ends");
     }
 }

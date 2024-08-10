@@ -20,7 +20,7 @@ public class GetItemThread extends Thread {
                 }
             }
             try {
-                Thread.sleep(1000);
+                Thread.sleep((long) (Configuration.DELAY*Math.random()));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
