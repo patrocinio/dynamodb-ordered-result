@@ -1,7 +1,7 @@
 package org.patro;
 
 public interface Configuration {
-    public int ITERATIONS = 1000;
+    public int ITERATIONS = 2000;
     public int DELAY= 10; // in ms
     public int NO_OF_THREADS = 4;
 
