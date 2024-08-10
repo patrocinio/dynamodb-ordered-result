@@ -12,11 +12,10 @@ public class PutItemThread extends Thread {
         {
             synchronized(seqNo) {
                 int number = seqNo.getSeqNo();
-
                 number++;
                 Handler.sendWriteRequest(number);
                 seqNo.setSeqNo(number);
-            }
+            }   
             try {
                 Thread.sleep((long) (Configuration.DELAY*Math.random()));
             } catch (InterruptedException e) {

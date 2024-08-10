@@ -10,16 +10,25 @@ public class App {
 
         Handler.trimTable();
         SequenceNumber seqNo = new SequenceNumber();
+        PutItemThread[] putThreads = new PutItemThread[Configuration.NO_OF_THREADS];
+        GetItemThread[] getThreads = new GetItemThread[Configuration.NO_OF_THREADS];
 
-        PutItemThread putItem = new PutItemThread(seqNo);
-        putItem.start();
+        for (int i = 0; i < Configuration.NO_OF_THREADS; i++)
+        {
+            PutItemThread putItem = new PutItemThread(seqNo);
+            putItem.start();
+            putThreads[i] = putItem;
 
-        GetItemThread getItem = new GetItemThread(seqNo);
-        getItem.start();
-
+            GetItemThread getItem = new GetItemThread(seqNo);
+            getItem.start();
+            getThreads[i] = getItem;
+        }
+        
         try {
-            putItem.join();
-            getItem.join();
+            for (int i = 0; i < Configuration.NO_OF_THREADS; i++) {
+                putThreads[i].join();
+                getThreads[i].join();
+            }
         } catch (InterruptedException e) {
         }
 
